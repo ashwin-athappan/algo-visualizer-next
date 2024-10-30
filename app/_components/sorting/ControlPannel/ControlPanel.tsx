@@ -1,20 +1,40 @@
 import React from 'react';
-import Slider from '@/app/_components/sorting/Slider/Slider';
+import Dropdown from "@/app/_components/sorting/Dropdown/Dropdown";
 
 interface controlPanelProps {
     handleCountChange: (count: number) => void;
     handleSpeedChange: (speed: number) => void;
-    minCount: number;
-    maxCount: number;
 }
 
-export default function ControlPanel({ handleCountChange, handleSpeedChange, minCount, maxCount }: controlPanelProps) {
+export default function ControlPanel({handleCountChange, handleSpeedChange}: controlPanelProps) {
+
+    const countOptions = [
+        {name: '10', value: 10},
+        {name: '20', value: 20},
+        {name: '30', value: 30},
+        {name: '40', value: 40},
+        {name: '50', value: 50},
+        {name: '100', value: 100},
+        {name: '250', value: 250},
+        {name: '500', value: 500},
+    ];
+    const speedOptions = [
+        {name: '1x', value: 1},
+        {name: '2x', value: 2},
+        {name: '3x', value: 3},
+        {name: '4x', value: 4},
+        {name: '5x', value: 5},
+        {name: '6x', value: 6},
+        {name: '7x', value: 7},
+        {name: '8x', value: 8},
+    ]
+
     return (
-        <div className='flex justify-center'>
-            <div className='bg-[#3A4042] py-5 px-10 w-1/2 mt-5 rounded-xl flex justify-between'>
-                <Slider handleChange={handleCountChange} type={'Count'} minCount={minCount} maxCount={maxCount} />
-                <Slider handleChange={handleSpeedChange} type={'Speed'} />
-            </div>
+        <div className='w-1/4 px-5 rounded-xl flex justify-center items-center'>
+            <Dropdown options={countOptions} selected={countOptions[0]} type={'count'}
+                      handleSelect={handleCountChange}/>
+            <Dropdown options={speedOptions} selected={speedOptions[0]} type={'speed'}
+                      handleSelect={handleSpeedChange}/>
         </div>
     );
 }

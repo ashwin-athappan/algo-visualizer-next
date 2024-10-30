@@ -2,14 +2,10 @@ import * as React from 'react';
 import {styled} from '@mui/material/styles';
 import Switch, {SwitchProps} from '@mui/material/Switch';
 
-interface switchProps extends SwitchProps {
-    handle: () => void;
-}
-
-const IOSSwitch = styled((props: switchProps) => {
+const IOSSwitch = styled((props: SwitchProps) => {
 
     const handleChange = () => {
-        props.handle();
+
     };
 
     return (

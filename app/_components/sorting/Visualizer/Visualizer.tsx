@@ -9,20 +9,19 @@ import InsertionSort from "@/app/_utils/sorting/algorithms/InsertionSort";
 import MergeSort from "@/app/_utils/sorting/algorithms/MergeSort";
 import QuickSort from "@/app/_utils/sorting/algorithms/QuickSort";
 import {sleep} from "@/app/_utils/sorting/helpers/helpers";
-
-import Bar from "@/app/_components/sorting/Bar/Bar";
+import QuickSortThreeWay from "@/app/_utils/sorting/algorithms/QuickSortThreeWay";
 
 // Icons
 import SkipPreviousIcon from '@mui/icons-material/SkipPrevious';
 import SkipNextIcon from '@mui/icons-material/SkipNext';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import PauseIcon from '@mui/icons-material/Pause';
-import QuickSortThreeWay from "@/app/_utils/sorting/algorithms/QuickSortThreeWay";
 
 // Elements
-import Selector from "@/app/_components/sorting/Select/Selector";
-import {InfoTooltips} from "@/app/_components/sorting/Tooltip/Tooltip";
-import {Tooltip} from "@mui/material";
+import InteractiveBar from "@/app/_components/sorting/Bar/InteractiveBar/InteractiveBar";
+import {InfoTooltips, NoMaxWidthTooltip} from "@/app/_components/sorting/Tooltip/Tooltip";
+import Dropdown from "@/app/_components/sorting/Dropdown/Dropdown";
+import AdjustableBar from "@/app/_components/sorting/Bar/AdjustableBar/AdjustableBar";
 
 interface visualizerState {
     array: number[];
@@ -62,6 +61,17 @@ export default class Visualizer extends Component<visualizerProps> {
     };
 
     ALGORITHMS = [BubbleSort, InsertionSort, SelectionSort, MergeSort, QuickSort, QuickSortThreeWay];
+    ALGORITHM_OPTIONS = [
+        {name: "Bubble Sort", value: 0},
+        {name: "Insertion Sort", value: 1},
+        {name: "Selection Sort", value: 2},
+        {name: "Merge Sort", value: 3},
+        {name: "Quick Sort", value: 4},
+        {
+            name: "Quick Sort Three Way", value: 5
+        }];
+    BAR_COUNT_OPTIONS = [];
+    SPEED_OPTIONS = [];
 
     clearColorKey = () => {
         let blankKey = new Array(this.props.barCount).fill(0);
@@ -120,6 +130,8 @@ export default class Visualizer extends Component<visualizerProps> {
         let steps = this.state.sortSteps.slice();
         let colorSteps = this.state.colorSteps.slice();
 
+        console.log(array);
+
         this.ALGORITHMS[this.state.algorithm](array, 0, steps, colorSteps);
 
         this.setState({
@@ -132,6 +144,7 @@ export default class Visualizer extends Component<visualizerProps> {
         this.clearColorKey();
 
         let barCount = this.props.barCount;
+
         let arr = this.props.initialArray;
 
         if (newArr.length > 0) {
@@ -178,6 +191,14 @@ export default class Visualizer extends Component<visualizerProps> {
         });
     };
 
+    stop = async () => {
+        let steps = this.state.sortSteps.slice();
+        let colorSteps = this.state.colorSteps.slice();
+        this.setState({isVisualizing: false}, () => {
+            this.props.handleChangeVisualizingState("NO");
+        });
+    };
+
     pause = () => {
         console.log('pause');
         let isVisualizing = this.state.isVisualizing;
@@ -208,7 +229,7 @@ export default class Visualizer extends Component<visualizerProps> {
             currentStep: 0,
             sortSteps: [this.state.sortSteps[0]],
         }, () => {
-            this.generateBars();
+            this.generateSteps();
         });
     }
 
@@ -216,51 +237,82 @@ export default class Visualizer extends Component<visualizerProps> {
         this.generateBars();
     };
 
+    chooseAdjustableBarWidth: () => number = () => {
+        switch (this.props.barCount) {
+            case 250:
+                return 2;
+            case 500:
+                return 1;
+            default:
+                return 5;
+        }
+    };
+
     render() {
         return (
             <div className="flex flex-col justify-center items-center">
                 <div className="flex justify-center items-center mt-5">
-                    <Selector handleAlgorithmChange={this.changeAlgorithm}/>
+                    <Dropdown options={this.ALGORITHM_OPTIONS} selected={this.ALGORITHM_OPTIONS[0]} type={"algorithm"}
+                              handleSelect={this.changeAlgorithm}/>
                     <div className="flex justify-center items-center my-2">
-                        <Tooltip title={InfoTooltips(this.state.algorithm)}>
+                        <NoMaxWidthTooltip title={InfoTooltips(this.state.algorithm)} arrow>
                             <button className="bg-gray-600 px-5 py-3 rounded-md">INFO</button>
-                        </Tooltip>
+                        </NoMaxWidthTooltip>
                     </div>
                 </div>
                 <div className='m-0 px-5 flex flex-col justify-center items-center bg-[#121419]'>
-                    <div
-                        className='barsDiv mt-15 flex justify-center items-center h-[200px] p-0 bg-[#818181] rounded-xl'>
-                        {this.state.array.map((value: number, index: number) => (
-                            <Bar
-                                key={index}
-                                index={index}
-                                length={value}
-                                color={this.state.colorKey[index]}
-                                changeArray={this.changeArray}
-                            />
-                        ))}
-                    </div>
+                    {this.props.barCount <= 30 ? (
+                        <div
+                            className='barsDiv mt-15 flex justify-center items-center h-[200px] p-0 bg-[#818181] rounded-xl'>
+                            {this.state.array.map((value: number, index: number) => (
+                                <InteractiveBar
+                                    key={index}
+                                    index={index}
+                                    length={value}
+                                    color={this.state.colorKey[index]}
+                                    changeArray={this.changeArray}
+                                />
+                            ))}
+                        </div>
+                    ) : (
+                        <div
+                            className='barsDiv mt-15 flex justify-center items-center h-[300px] p-0 px-5 bg-[#818181] rounded-xl'>
+                            {this.state.array.map((value: number, index: number) => (
+                                <AdjustableBar key={index} index={index} length={value}
+                                               color={this.state.colorKey[index]}
+                                               width={this.chooseAdjustableBarWidth()}/>
+                            ))}
+                        </div>
+                    )}
 
-                    <div id="control-panel" className="mt-20">
-                        <SkipPreviousIcon
-                            className="cursor-pointer"
-                            onClick={this.previousStep}
-                        />
-                        {this.state.isVisualizing ? (
-                            <PauseIcon
-                                className="cursor-pointer"
-                                onClick={this.pause}
+                    <div id="control-panel" className="mt-20 px-5 py-2 bg-white rounded-xl flex items-center">
+                        <div className="border border-3 border-black rounded-3xl p-1">
+                            <SkipPreviousIcon
+                                className="cursor-pointer text-black"
+                                onClick={this.previousStep}
                             />
-                        ) : (
-                            <PlayArrowIcon
-                                className="cursor-pointer"
-                                onClick={this.start}
+                        </div>
+                        <div className="border border-3 border-black rounded-3xl p-1 mx-2 ">
+                            {this.state.isVisualizing ? (
+                                <PauseIcon
+                                    className="cursor-pointer text-black"
+                                    fontSize="large"
+                                    onClick={this.pause}
+                                />
+                            ) : (
+                                <PlayArrowIcon
+                                    className="cursor-pointer text-black"
+                                    fontSize="large"
+                                    onClick={this.start}
+                                />
+                            )}
+                        </div>
+                        <div className="border border-3 border-black rounded-3xl p-1">
+                            <SkipNextIcon
+                                className="cursor-pointer text-black"
+                                onClick={this.nextStep}
                             />
-                        )}
-                        <SkipNextIcon
-                            className="cursor-pointer"
-                            onClick={this.nextStep}
-                        />
+                        </div>
                     </div>
 
                     <div className='line-break'/>

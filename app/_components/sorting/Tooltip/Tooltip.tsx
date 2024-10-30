@@ -1,5 +1,7 @@
 import React from 'react';
 import Typography from '@mui/material/Typography';
+import Tooltip, { TooltipProps, tooltipClasses } from '@mui/material/Tooltip';
+import { styled } from '@mui/material/styles';
 
 const getTooltip = (algorithm: number) => {
     switch (algorithm) {
@@ -77,7 +79,7 @@ const getTooltip = (algorithm: number) => {
                         </li>
                         <li>
                             Final step: Merge 2 sorted arrays of N/2 elements (for simplicity
-                            of this discussion, we assume that N is even) to obtain a fully
+                            of this discussion,<br></br> we assume that N is even) to obtain a fully
                             sorted array of N elements.
                         </li>
                     </ol>
@@ -111,12 +113,21 @@ const getTooltip = (algorithm: number) => {
 
 function InfoTooltips(algorithm: number) {
     return (
-        <div className="text-white text-lg w-full rounded-xl">
+        <div className="text-white text-lg w-[800px] rounded-xl">
             {getTooltip(algorithm)}
         </div>
     );
 }
 
+const NoMaxWidthTooltip = styled(({ className, ...props }: TooltipProps) => (
+    <Tooltip {...props} classes={{ popper: className }} />
+))({
+    [`& .${tooltipClasses.tooltip}`]: {
+        maxWidth: 'none',
+    },
+});
+
 export {
     InfoTooltips,
+    NoMaxWidthTooltip
 };

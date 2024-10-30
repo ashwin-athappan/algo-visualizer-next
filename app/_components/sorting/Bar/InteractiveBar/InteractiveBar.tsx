@@ -1,27 +1,21 @@
 import React, {useState, useEffect} from 'react';
-import styles from './Bar.module.css';
+import styles from './InteractiveBar.module.css';
 
-interface barInterface {
+import {colors} from "@/app/_components/sorting/Bar/common";
+
+interface interactiveBarProps {
     index: number;
     length: number;
     color: number;
     changeArray: (index: number, value: number) => void;
 }
 
-const Bars = (props: barInterface) => {
+const Bars = (props: interactiveBarProps) => {
     const {index, length, color, changeArray} = props;
     const [len, setLength] = useState(length);
     useEffect(() => {
         setLength(length);
     }, [length]);
-
-    const colors = [
-        '#40514e',
-        '#2f89fc',
-        '#30e3ca',
-        '#ff304f',
-        '#f99417',
-        '#0D1282'];
 
     let barStyle = {
         background: colors[color],

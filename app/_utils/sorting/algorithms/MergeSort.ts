@@ -8,10 +8,9 @@ const mergeSort = (array: number[], position: number, arraySteps: number[][], co
 
     const LD = mergeSort(array.slice(0, mid), position, arraySteps, colorSteps);
 
-    addSelectSteps(array, position, mid, arraySteps, LD.colorSteps);
-
     const RD = mergeSort(array.slice(mid), position + mid, arraySteps, colorSteps);
 
+    addSelectSteps(array, position + mid, mid, arraySteps, LD.colorSteps);
 
     let arrayNew = merge(LD.array, RD.array, position, arraySteps, colorSteps);
     arraySteps.push(arraySteps[arraySteps.length - 1].slice());
@@ -44,10 +43,10 @@ const merge = (L: number[], R: number[], position: number, arraySteps: number[][
 
 
     if (L.length !== 0 || R.length !== 0) {
-        updateColor(position, colorSteps, arrayNew.length, L, R);
         arrayNew = arrayNew.concat(L);
         arrayNew = arrayNew.concat(R);
         insertStep(arrayNew, position, arraySteps);
+        updateColor(position, colorSteps, arrayNew.length, L, R);
     }
 
     return arrayNew;
@@ -59,25 +58,10 @@ const addSelectSteps = (array: number[], position: number, mid: number, arraySte
     arraySteps.push(arraySteps[arraySteps.length - 1].slice());
     let newColorKey = colorSteps[colorSteps.length - 1].slice();
 
-    if (position < mid) {
-        newColorKey[mid] = 4;
-        colorSteps.push(newColorKey);
-        colorSteps.push(colorSteps[colorSteps.length - 1]
-            .slice()
-            .fill(0));
-        colorSteps.push(colorSteps[colorSteps.length - 1]
-            .slice()
-            .fill(1, position, mid));
-    } else {
-        newColorKey[position + mid] = 4;
-        colorSteps.push(newColorKey);
-        colorSteps.push(colorSteps[colorSteps.length - 1]
-            .slice()
-            .fill(0));
-        colorSteps.push(colorSteps[colorSteps.length - 1]
-            .slice()
-            .fill(1, position + mid, array.length));
-    }
+    newColorKey[mid] = 4;
+    colorSteps.push(newColorKey);
+    colorSteps.push(colorSteps[colorSteps.length - 1].slice().fill(0));
+    colorSteps.push(colorSteps[colorSteps.length - 1].slice().fill(1, position, mid));
 };
 
 const updateColor = (position: number, colorSteps: number[][], start: number, L: number[], R: number[]) => {

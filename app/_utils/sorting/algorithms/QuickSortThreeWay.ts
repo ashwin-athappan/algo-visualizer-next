@@ -1,3 +1,5 @@
+import { addStep, addFillStep, appendPreviousSteps, fillRange } from './helpers';
+
 let i, j;
 
 const quickSortThreeWay = (array: number[], position: number, arraySteps: number[][], colorSteps: number[][]) => {
@@ -105,37 +107,5 @@ function partition(array: number[], l: number, r: number, arraySteps: number[][]
         fillRange(array, i, k, 1, arraySteps, colorSteps);
     }
 }
-
-const addStep = (array: number[], positions: number[], colors: number[], arraySteps: number[][], colorSteps: number[][]) => {
-    arraySteps.push(array.slice());
-    let colorKey = new Array(array.length).fill(0);
-    positions.forEach((position, index) => {
-        colorKey[position] = colors[index];
-    });
-    colorSteps.push(colorKey);
-};
-
-const addFillStep = (array: number[], color: number, arraySteps: number[][], colorSteps: number[][]) => {
-    arraySteps.push(array.slice());
-    let colorKey = colorSteps[colorSteps.length - 1].slice();
-    colorKey.fill(color);
-    colorSteps.push(colorKey);
-};
-
-const appendPreviousSteps = (array: number[], positions: number[], colors: number[], arraySteps: number[][], colorSteps: number[][]) => {
-    arraySteps.push(array.slice());
-    let colorKey = colorSteps[colorSteps.length - 1].slice();
-    positions.forEach((position, index) => {
-        colorKey[position] = colors[index];
-    });
-    colorSteps.push(colorKey);
-}
-
-const fillRange = (array: number[], start: number, end: number, color: number, arraySteps: number[][], colorSteps: number[][]) => {
-    arraySteps.push(array.slice());
-    let colorKey = colorSteps[colorSteps.length - 1].slice();
-    colorKey.fill(color, start, end);
-    colorSteps.push(colorKey);
-};
 
 export default quickSortThreeWay;

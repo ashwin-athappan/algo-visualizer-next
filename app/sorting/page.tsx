@@ -4,7 +4,6 @@ import React, {Component} from 'react';
 
 import Visualizer from "@/app/_components/sorting/Visualizer/Visualizer";
 import Navbar from "@/app/_components/sorting/Navbar/Navbar";
-import ControlPanel from "@/app/_components/sorting/ControlPannel/ControlPanel";
 
 interface sortingState {
     delay: number;
@@ -14,7 +13,6 @@ interface sortingState {
     minCount: number;
     maxCount: number;
     isVisualizing: number;
-    visualizeBigArray: boolean;
     children: React.Ref<Visualizer>[]
 }
 
@@ -32,9 +30,8 @@ export default class Sorting extends Component {
         initialArray: [],
         barCount: 10,
         minCount: 10,
-        maxCount: 25,
+        maxCount: 500,
         isVisualizing: this.visCount,
-        visualizeBigArray: false,
         children: [],
     };
 
@@ -53,7 +50,7 @@ export default class Sorting extends Component {
     componentWillMount() {
         let arr = [];
         for (let i = 0; i < 10; i++) {
-            arr.push(this.generateRandomNumber(50, 200));
+            arr.push(this.generateRandomNumber(40, 200));
         }
         let children = this.generateChildRefs();
         this.setState({initialArray: arr, children: children});
@@ -76,12 +73,12 @@ export default class Sorting extends Component {
             case 1:
             case 2:
                 min = 10;
-                max = 25;
+                max = 500;
                 break;
             case 3:
             case 4:
                 min = 10;
-                max = 10;
+                max = 200;
                 break;
         }
         ;
@@ -93,6 +90,15 @@ export default class Sorting extends Component {
             const child = this.state.children[i];
             if (child && 'current' in child && child.current) {
                 child.current.start().then(() => console.log('started'));
+            }
+        }
+    }
+
+    handleStop = () => {
+        for (let i = 0; i < this.state.comparison; i++) {
+            const child = this.state.children[i];
+            if (child && 'current' in child && child.current) {
+                child.current.stop().then(() => console.log('stopped'));
             }
         }
     }
@@ -109,8 +115,14 @@ export default class Sorting extends Component {
     handleRandomize = () => {
         let arr = [];
 
-        for (let i = 0; i < this.state.barCount; i++) {
-            arr.push(this.generateRandomNumber(50, 200));
+        if (this.state.barCount <= 30) {
+            for (let i = 0; i < this.state.barCount; i++) {
+                arr.push(this.generateRandomNumber(40, 200));
+            }
+        } else {
+            for (let i = 0; i < this.state.barCount; i++) {
+                arr.push(this.generateRandomNumber(10, 300));
+            }
         }
 
         for (let i = 0; i < this.state.comparison; i++) {
@@ -148,6 +160,15 @@ export default class Sorting extends Component {
             case 5:
                 speed = 100;
                 break;
+            case 6:
+                speed = 50;
+                break;
+            case 7:
+                speed = 25;
+                break;
+            case 8:
+                speed = 10;
+                break;
             default:
                 speed = 100;
                 break;
@@ -174,10 +195,6 @@ export default class Sorting extends Component {
         console.log(this.visCount);
     };
 
-    handleChangeVisualizeBigArray = () => {
-        this.setState({visualizeBigArray: !this.state.visualizeBigArray});
-    }
-
     render() {
 
         let visualizers = this.state.children.map((child, idx) => (
@@ -193,18 +210,14 @@ export default class Sorting extends Component {
                     isVisualizing={this.state.isVisualizing !== 0}
                     handleComparisonChange={this.changeComparison}
                     handleStart={this.handleStart}
+                    handleStop={this.handleStop}
                     handleRandomize={this.handleRandomize}
                     handleReset={this.handleReset}
-                    handleChangeVisualizeBigArray={this.handleChangeVisualizeBigArray}
+                    handleSpeedChange={this.handleSpeedChange}
+                    handleCountChange={this.handleCountChange}
                 />
 
                 <div className="bg-[#121419]">
-                    <ControlPanel
-                        handleCountChange={this.handleCountChange}
-                        handleSpeedChange={this.handleSpeedChange}
-                        minCount={this.state.minCount}
-                        maxCount={this.state.maxCount}/>
-
                     {this.state.comparison === 1 && (
                         visualizers.map(visualizer => visualizer)
                     )}

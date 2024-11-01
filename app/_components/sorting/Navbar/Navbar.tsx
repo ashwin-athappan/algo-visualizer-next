@@ -52,7 +52,7 @@ export default function Navbar(props: navbarProps) {
 
 
     return (
-        <nav className="flex items-center py-5">
+        <nav className="flex items-center py-5 bg-[#282829]">
             <div className="text-2xl ml-5">
                 <span className="font-bold p-2">Sorting</span>
                 <span className="bg-[#4039ad] font-bold p-2 rounded">Visualizer</span>

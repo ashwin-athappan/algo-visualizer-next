@@ -169,6 +169,12 @@ export default class Sorting extends Component {
             case 8:
                 speed = 10;
                 break;
+            case 9:
+                speed = 5;
+                break;
+            case 10:
+                speed = 1;
+                break;
             default:
                 speed = 100;
                 break;
@@ -197,12 +203,17 @@ export default class Sorting extends Component {
 
     render() {
 
-        let visualizers = this.state.children.map((child, idx) => (
-            <Visualizer key={idx} delay={this.state.delay} comparisons={this.state.comparison}
+        let visualizers = this.state.children.map((child, idx) => {
+            let isInteractive = true;
+            if (this.state.comparison > 2 && this.state.barCount > 10) {
+                isInteractive = false;
+            }
+            return(<Visualizer key={idx} delay={this.state.delay} comparisons={this.state.comparison}
                         initialArray={this.state.initialArray} barCount={this.state.barCount}
                         handleChangeVisualizingState={this.handleChangeVisualizingState}
-                        ref={child}/>
-        ));
+                        isInteractive={isInteractive}
+                        ref={child}/>);
+        });
 
         return (
             <>

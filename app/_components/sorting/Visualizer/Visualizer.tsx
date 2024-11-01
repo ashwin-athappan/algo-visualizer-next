@@ -20,7 +20,7 @@ import PauseIcon from '@mui/icons-material/Pause';
 // Elements
 import InteractiveBar from "@/app/_components/sorting/Bar/InteractiveBar/InteractiveBar";
 import {InfoTooltips, NoMaxWidthTooltip} from "@/app/_components/sorting/Tooltip/Tooltip";
-import Dropdown from "@/app/_components/sorting/Dropdown/Dropdown";
+import Dropdown from "@/app/_components/common/Dropdown/Dropdown";
 import AdjustableBar from "@/app/_components/sorting/Bar/AdjustableBar/AdjustableBar";
 
 interface visualizerState {
@@ -40,6 +40,7 @@ interface visualizerProps {
     comparisons: number;
     barCount: number;
     handleChangeVisualizingState: (isVisualizing: string) => void;
+    isInteractive: boolean;
 }
 
 export default class Visualizer extends Component<visualizerProps> {
@@ -261,7 +262,7 @@ export default class Visualizer extends Component<visualizerProps> {
                     </div>
                 </div>
                 <div className='m-0 px-5 flex flex-col justify-center items-center bg-[#121419]'>
-                    {this.props.barCount <= 30 ? (
+                    {this.props.isInteractive ? (
                         <div
                             className='barsDiv mt-15 flex justify-center items-center h-[200px] p-0 bg-[#818181] rounded-xl'>
                             {this.state.array.map((value: number, index: number) => (

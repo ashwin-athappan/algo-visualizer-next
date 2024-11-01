@@ -1,5 +1,5 @@
 import React from 'react';
-import Dropdown from "@/app/_components/sorting/Dropdown/Dropdown";
+import Dropdown from "@/app/_components/common/Dropdown/Dropdown";
 
 interface controlPanelProps {
     handleCountChange: (count: number) => void;
@@ -27,6 +27,8 @@ export default function ControlPanel({handleCountChange, handleSpeedChange}: con
         {name: '6x', value: 6},
         {name: '7x', value: 7},
         {name: '8x', value: 8},
+        {name: '9x', value: 9},
+        {name: '10x', value: 10},
     ]
 
     return (

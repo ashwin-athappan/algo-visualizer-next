@@ -8,8 +8,9 @@ import SelectionSort from "@/app/_utils/sorting/algorithms/SelectionSort";
 import InsertionSort from "@/app/_utils/sorting/algorithms/InsertionSort";
 import MergeSort from "@/app/_utils/sorting/algorithms/MergeSort";
 import QuickSort from "@/app/_utils/sorting/algorithms/QuickSort";
-import {sleep} from "@/app/_utils/sorting/helpers/helpers";
 import QuickSortThreeWay from "@/app/_utils/sorting/algorithms/QuickSortThreeWay";
+import HeapSort from "@/app/_utils/sorting/algorithms/HeapSort";
+import {sleep} from "@/app/_utils/sorting/helpers/helpers";
 
 // Icons
 import SkipPreviousIcon from '@mui/icons-material/SkipPrevious';
@@ -61,16 +62,15 @@ export default class Visualizer extends Component<visualizerProps> {
         delay: this.props.delay,
     };
 
-    ALGORITHMS = [BubbleSort, InsertionSort, SelectionSort, MergeSort, QuickSort, QuickSortThreeWay];
+    ALGORITHMS = [BubbleSort, InsertionSort, SelectionSort, MergeSort, QuickSort, QuickSortThreeWay, HeapSort];
     ALGORITHM_OPTIONS = [
         {name: "Bubble Sort", value: 0},
         {name: "Insertion Sort", value: 1},
         {name: "Selection Sort", value: 2},
         {name: "Merge Sort", value: 3},
         {name: "Quick Sort", value: 4},
-        {
-            name: "Quick Sort Three Way", value: 5
-        }];
+        {name: "Quick Sort Three Median", value: 5},
+        {name: "Heap Sort", value: 6},];
     BAR_COUNT_OPTIONS = [];
     SPEED_OPTIONS = [];
 
@@ -105,8 +105,8 @@ export default class Visualizer extends Component<visualizerProps> {
         this.clearColorKey();
 
         this.setState({
-            array: this.state.array,
-            sortSteps: [this.state.array],
+            array: this.props.initialArray,
+            sortSteps: [this.props.initialArray],
             currentStep: 0,
         });
 

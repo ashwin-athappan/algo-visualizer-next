@@ -47,7 +47,7 @@ export default class Sorting extends Component {
         return children;
     }
 
-    componentWillMount() {
+    componentDidMount() {
         let arr = [];
         for (let i = 0; i < 10; i++) {
             arr.push(this.generateRandomNumber(40, 200));
@@ -124,6 +124,8 @@ export default class Sorting extends Component {
                 arr.push(this.generateRandomNumber(10, 300));
             }
         }
+
+        this.setState({initialArray: arr});
 
         for (let i = 0; i < this.state.comparison; i++) {
             const child = this.state.children[i];

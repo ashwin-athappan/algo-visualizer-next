@@ -5,10 +5,12 @@ interface NavbarProps {
     setRuns: (runs: number) => void;
     setAlgorithm: (algorithm: number) => void;
     plot: () => void;
+    plotBestCase: () => void;
+    plotWorstCase: () => void;
     isPlotting: boolean;
 }
 
-export default function Navbar({setRuns, setAlgorithm, plot, isPlotting}: NavbarProps) {
+export default function Navbar({setRuns, setAlgorithm, plot, plotBestCase, plotWorstCase, isPlotting}: NavbarProps) {
 
     return (
         <nav className="flex items-center py-5 bg-[#282829]">
@@ -28,6 +30,18 @@ export default function Navbar({setRuns, setAlgorithm, plot, isPlotting}: Navbar
                     className="bg-[#DC3545] px-3 py-2 rounded-md cursor-pointer hover:text-black disabled:bg-gray-600 disabled:hover:font-normal"
                     disabled={isPlotting}>
                     Clear Chart
+                </button>
+                <button
+                    className="bg-[#0d6efd] px-3 py-2 rounded-md cursor-pointer hover:text-black disabled:bg-gray-600 disabled:hover:font-normal"
+                    onClick={plotBestCase}
+                    disabled={isPlotting}>
+                    Plot Best Case
+                </button>
+                <button
+                    className="bg-[#fd7e14] px-3 py-2 rounded-md cursor-pointer hover:text-black disabled:bg-gray-600 disabled:hover:font-normal"
+                    onClick={plotWorstCase}
+                    disabled={isPlotting}>
+                    Plot Worst Case
                 </button>
             </div>
         </nav>

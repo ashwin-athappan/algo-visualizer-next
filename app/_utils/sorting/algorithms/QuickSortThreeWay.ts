@@ -35,13 +35,15 @@ function partition(array: number[], l: number, r: number, arraySteps: number[][]
 
     let p = l - 1, q = r;
     let v = array[r];
-    let newColorKey;
+
     while (true) {
-        while (array[++i] < v) ;
+        while (array[++i] < v) {
+            addStep(array, [i, r], [4, 4], arraySteps, colorSteps);
+        }
 
         appendPreviousSteps(array, [r, j], [1, 3], arraySteps, colorSteps);
         while (v < array[--j]) {
-            appendPreviousSteps(array, [r, j], [1, 1], arraySteps, colorSteps);
+            addStep(array, [r, j], [1, 1], arraySteps, colorSteps);
             if (j == l) {
                 appendPreviousSteps(array, [j], [3], arraySteps, colorSteps);
                 break;
@@ -49,7 +51,7 @@ function partition(array: number[], l: number, r: number, arraySteps: number[][]
         }
 
         if (i >= j) {
-            appendPreviousSteps(array, [i, j], [3, 1], arraySteps, colorSteps);
+            addStep(array, [i, j], [3, 1], arraySteps, colorSteps);
             break;
         }
 
@@ -57,18 +59,17 @@ function partition(array: number[], l: number, r: number, arraySteps: number[][]
         array[i] = array[j];
         array[j] = temp;
 
-        appendPreviousSteps(array, [i, j], [1, 1], arraySteps, colorSteps);
+        addStep(array, [i, j], [1, 1], arraySteps, colorSteps);
 
 
         if (array[i] == v) {
-            appendPreviousSteps(array, [i, r], [4, 1, 3], arraySteps, colorSteps);
+            appendPreviousSteps(array, [i, r], [4, 3], arraySteps, colorSteps);
             p++;
-            appendPreviousSteps(array, [r, p], [1, 3], arraySteps, colorSteps);
+            addStep(array, [p], [3], arraySteps, colorSteps);
             temp = array[i];
             array[i] = array[p];
             array[p] = temp;
-
-            appendPreviousSteps(array, [i, p], [2, 2], arraySteps, colorSteps);
+            addStep(array, [i, p], [2, 2], arraySteps, colorSteps);
         }
 
         if (array[j] == v) {
@@ -79,7 +80,7 @@ function partition(array: number[], l: number, r: number, arraySteps: number[][]
             temp = array[q];
             array[q] = array[j];
             array[j] = temp;
-            appendPreviousSteps(array, [q, j], [2, 2], arraySteps, colorSteps);
+            addStep(array, [q, j], [2, 2], arraySteps, colorSteps);
         }
     }
 
@@ -95,7 +96,7 @@ function partition(array: number[], l: number, r: number, arraySteps: number[][]
         array[k] = array[j];
         appendPreviousSteps(array, [k, j], [1, 1], arraySteps, colorSteps);
         array[j] = temp;
-        appendPreviousSteps(array, [k, j], [2, 2], arraySteps, colorSteps);
+        addStep(array, [k, j], [2, 2], arraySteps, colorSteps);
     }
 
     i = i + 1;

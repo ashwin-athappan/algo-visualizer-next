@@ -23,7 +23,11 @@ export default function ControlPanel({handleRunsChange, handleAlgorithmChange}: 
     const algorithmOptions = [
         {name: 'Bubble Sort', value: 0},
         {name: 'Insertion Sort', value: 1},
-        {name: 'Merge Sort', value: 2},
+        {name: 'Selection Sort', value: 2},
+        {name: 'Merge Sort', value: 3},
+        {name: 'Quick Sort', value: 4},
+        {name: 'Quick Sort Three Median', value: 5},
+        {name: 'Heap Sort', value: 6},
     ]
 
     return (

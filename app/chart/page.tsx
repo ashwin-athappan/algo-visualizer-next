@@ -1,6 +1,6 @@
 "use client";
 
-import React, {useEffect, useRef, useState} from 'react';
+import React, {Component} from 'react';
 
 import Navbar from "@/app/_components/chart/Navbar/Navbar";
 import {
@@ -19,12 +19,47 @@ import {Line} from "react-chartjs-2";
 // Algorithms
 import {BubbleSort} from "@/app/_utils/chart/algorithms/BubbleSort";
 import {InsertionSort} from "@/app/_utils/chart/algorithms/InsertionSort";
+import {SelectionSort} from "@/app/_utils/chart/algorithms/SelectionSort";
 import {MergeSort} from "@/app/_utils/chart/algorithms/MergeSort";
+import {QuickSort} from "@/app/_utils/chart/algorithms/QuickSort";
+import {QuickSortThreeWay} from "@/app/_utils/chart/algorithms/QuickSortThreeWay";
+import {HeapSort} from "@/app/_utils/chart/algorithms/HeapSort";
 import {sleep} from "@/app/_utils/sorting/helpers/helpers";
 
 ChartJS.register(CategoryScale, LineElement, LinearScale, PointElement, Title, Tooltip, Legend, Filler);
 
-const ALGORITHMS = [BubbleSort, InsertionSort, MergeSort];
+const ALGORITHMS = [BubbleSort, InsertionSort, SelectionSort, MergeSort, QuickSort, QuickSortThreeWay, HeapSort];
+
+const ALGORITHM_RUN_DATA = [
+    {
+        algorithm: "BubbleSort",
+        iteration: 0,
+    },
+    {
+        algorithm: "InsertionSort",
+        iteration: 0,
+    },
+    {
+        algorithm: "SelectionSort",
+        iteration: 0,
+    },
+    {
+        algorithm: "MergeSort",
+        iteration: 0,
+    },
+    {
+        algorithm: "QuickSort",
+        iteration: 0,
+    },
+    {
+        algorithm: "QuickSortThreeMedian",
+        iteration: 0,
+    },
+    {
+        algorithm: "HeapSort",
+        iteration: 0,
+    }
+];
 
 const generateRandomNumber = (min: number, max: number) => {
     return Math.floor(Math.random() * (max - min) + min);
@@ -37,22 +72,38 @@ const generateRandomRGBColor = (): string => {
     return `rgb(${R}, ${G}, ${B})`;
 };
 
-const generateRandomArray = (size: number): number[] => {
+const generateRandomArray = (size: number, algorithm: number, bestCaseFlag: boolean, worstCaseFlag: boolean): number[] => {
     const arr = [];
-    for (let i = 0; i < size; i ++) {
-        arr.push(generateRandomNumber(0, size));
+
+    switch (algorithm) {
+        case 0:
+        case 1:
+        case 2:
+        case 3:
+        case 5:
+            if (bestCaseFlag) {
+                for (let i = 0; i < size; i++) {
+                    arr.push(i);
+                }
+                return arr;
+            } else if (worstCaseFlag) {
+                for (let i = size; i > 0; i--) {
+                    arr.push(i);
+                }
+                return arr;
+            } else {
+                for (let i = 0; i < size; i++) {
+                    arr.push(generateRandomNumber(0, size));
+                }
+            }
+            break;
+        default:
+            for (let i = 0; i < size; i++) {
+                arr.push(generateRandomNumber(0, size));
+            }
+            break;
     }
     return arr;
-};
-
-const createDataPoints = async (start: number, algorithm: number) => {
-    console.log(start);
-    const arr = generateRandomArray(start);
-    const startTime = new Date().getTime();
-    await ALGORITHMS[algorithm](arr);
-    const endTime = new Date().getTime();
-
-    return endTime - startTime;
 };
 
 const getAlgorithm = (algorithm: number): string => {
@@ -62,7 +113,15 @@ const getAlgorithm = (algorithm: number): string => {
         case 1:
             return "InsertionSort";
         case 2:
+            return "SelectionSort";
+        case 3:
             return "MergeSort";
+        case 4:
+            return "QuickSort";
+        case 5:
+            return "QuickSortThreeMedian";
+        case 6:
+            return "HeapSort";
         default:
             return "None";
     }
@@ -82,124 +141,147 @@ interface chartData {
     datasets: chartDisplayData[];
 }
 
+interface chartState {
+    chartData: chartData;
+    runs: number;
+    algorithm: number;
+    bestCaseFlag: boolean;
+    worstCaseFlag: boolean;
+    isPlotting: boolean;
+}
 
-export default function Chart() {
+export default class Chart extends Component {
 
-    const [runs, setRuns] = React.useState(5);
-    const [chartData, setChartData] = React.useState<chartData>({
-        labels: [],
-        datasets: [],
-    });
-    const [algorithm, setAlgorithm] = useState<number>(0);
-    const [iterations, setIterations] = useState<number[]>([0, 0, 0, 0, 0, 0, 0]);
-    const [isPlotting, setIsPlotting] = useState<boolean>(false);
+    state: chartState = {
+        chartData: {
+            labels: [],
+            datasets: []
+        },
+        runs: 5,
+        algorithm: 0,
+        bestCaseFlag: false,
+        worstCaseFlag: false,
+        isPlotting: false,
+    };
 
-    const options = {
+    options = {
+        animation: {
+            duration: 0
+        },
         scales: {
-            y: {
-                title: {
-                    display: true,
-                    text: "Time Taken (ms)",
-                },
-                display: true,
-            },
             x: {
                 title: {
                     display: true,
-                    text: "Input Size",
-                },
-                display: true,
+                    text: 'Array Size'
+                }
             },
-        },
-    };
-
-    const plot = async () => {
-        console.log('Plotting');
-        setIsPlotting(true);
-        setIterations((prev) => {
-            prev[algorithm] ++;
-            return prev;
-        });
-        const generatedLabels: number[] = [];
-        const generatedTimes: number[] = [];
-        const generatedData: chartDisplayData[] = chartData.datasets;
-        let start = 0;
-        for (let i = 0; i < runs; i ++) {
-            start += 500;
-            generatedLabels.push(start);
-            const time = await createDataPoints(start, algorithm);
-            generatedTimes.push(time);
+            y: {
+                title: {
+                    display: true,
+                    text: 'Time (ms)'
+                }
+            }
         }
-        generatedData.push({
-            axis: 'y',
-            label: `${getAlgorithm(algorithm)} - ${iterations[algorithm]}`,
-            data: generatedTimes,
-            fill: true,
-            borderColor: generateRandomRGBColor(),
-            tension: 0.1,
-        });
-        console.log(generatedLabels);
-        console.log(generatedData);
-        setChartData({
-            labels: generatedLabels,
-            datasets: generatedData,
-        })
-        await sleep(1000);
-        setIsPlotting(false);
+    }
+
+    setRuns = (runs: number) => {
+        this.setState({...this.state, runs: runs});
     };
 
-    useEffect(() => {
-        console.log(chartData);
-        // console.log('Chart Display');
-        // const l: number[] = [];
-        // const ds: number[][] = [];
-        // let generatedData: chartDisplayData[] = [];
-        // let start = 50;
-        // for (let i = 0; i < 30; i++) {
-        //     l.push(start);
-        //     start += 500;
-        // }
-        // console.log(l);
-        // let tmpDS = []
-        // for (let size of l) {
-        //     tmpDS.push(createDataPoints(size, 0));
-        // }
-        // ds.push(tmpDS);
-        // tmpDS = [];
-        // for (let size of l) {
-        //     tmpDS.push(createDataPoints(size, 1));
-        // }
-        // ds.push(tmpDS);
-        // tmpDS = [];
-        // for (let size of l) {
-        //     tmpDS.push(createDataPoints(size, 2));
-        // }
-        // ds.push(tmpDS);
-        //
-        // console.log(ds);
-        // for (let i = 0; i < ds.length; i++) {
-        //     generatedData.push({
-        //         axis: 'y',
-        //         label: `Algorithm - ${i + 1}`,
-        //         data: ds[i],
-        //         fill: true,
-        //         borderColor: generateRandomRGBColor(),
-        //         tension: 0.1,
-        //     });
-        // }
-        // console.log(generatedData);
-        // setLabel(l);
-        // setData(generatedData);
-    }, []);
+    setAlgorithm = (algorithm: number) => {
+        this.setState({...this.state, algorithm: algorithm});
+    };
 
-    return (
-        <>
-            <Navbar setRuns={setRuns} setAlgorithm={setAlgorithm} plot={plot} isPlotting={isPlotting}/>
-            <div className="flex justify-center items-center w-full bg-[#131419] mt-10">
-                <div className="w-3/4">
-                    <Line key={JSON.stringify(chartData)} data={chartData} options={options} className="bg-white w-full"/>
+    createDataPoints = async (start: number, algorithm: number, data: chartData, index: number) => {
+        console.log(start);
+        const arr = generateRandomArray(start, this.state.algorithm, this.state.bestCaseFlag, this.state.worstCaseFlag);
+        console.log(arr);
+        const startTime = performance.now();
+        ALGORITHMS[algorithm](arr);
+        const endTime = performance.now();
+        data.datasets[index - 1].data.push(Math.round((endTime - startTime) * 100) / 100);
+
+        console.log(data.datasets);
+
+        this.setState({...this.state, chartData: data});
+
+        await sleep(10);
+    };
+
+    plotBestCase = async () => {
+        this.setState({
+            ...this.state,
+            bestCaseFlag: true,
+            worstCaseFlag: false
+        }, () => {
+            this.plot();
+        });
+    };
+
+    plotWorstCase = async () => {
+        this.setState({
+            ...this.state,
+            bestCaseFlag: false,
+            worstCaseFlag: true
+        }, () => {
+            this.plot();
+        });
+    };
+
+    // when plotting I want the algorithm to be called for the number of runs
+    // and the time taken for each run to be stored in the chartData state and displayed immediately
+    plot = async () => {
+        this.setState({...this.state, isPlotting: true});
+        let start = 500;
+        const data = this.state.chartData;
+        data.labels = [];
+
+        ALGORITHM_RUN_DATA[this.state.algorithm].iteration += 1;
+
+        data.datasets.push({
+            axis: 'x',
+            label: `${getAlgorithm(this.state.algorithm)} ${ALGORITHM_RUN_DATA[this.state.algorithm].iteration}`,
+            data: [],
+            fill: false,
+            borderColor: generateRandomRGBColor(),
+            tension: 0.1
+        });
+
+        for (let i = 0; i < this.state.runs; i++) {
+            data.labels.push(start);
+            start += 500;
+        }
+
+        this.setState({...this.state, chartData: data});
+
+        start = 500;
+
+        for (let i = 0; i < this.state.runs; i++) {
+            await this.createDataPoints(start, this.state.algorithm, data, data.datasets.length);
+            start += 500;
+        }
+
+        this.setState({...this.state,
+            bestCaseFlag: false,
+            worstCaseFlag: false,
+            isPlotting: false
+        });
+    }
+
+    render() {
+        return (
+            <>
+                <Navbar setRuns={this.setRuns} setAlgorithm={this.setAlgorithm} plot={this.plot}
+                        plotBestCase={this.plotBestCase} plotWorstCase={this.plotWorstCase}
+                        isPlotting={this.state.isPlotting}/>
+                <div className="flex justify-center items-center w-full bg-[#131419] mt-10">
+                    <div className="w-3/4">
+                        <Line key={JSON.stringify(this.state.chartData)} data={this.state.chartData}
+                              options={this.options}
+                              className="bg-white w-full"/>
+                    </div>
                 </div>
-            </div>
-        </>
-    );
+            </>
+        );
+    }
 }

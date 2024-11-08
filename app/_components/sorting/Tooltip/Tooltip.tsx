@@ -1,114 +1,58 @@
 import React from 'react';
 import Typography from '@mui/material/Typography';
-import Tooltip, { TooltipProps, tooltipClasses } from '@mui/material/Tooltip';
-import { styled } from '@mui/material/styles';
+import Tooltip, {TooltipProps, tooltipClasses} from '@mui/material/Tooltip';
+import {styled} from '@mui/material/styles';
+import {
+    BubbleSortDescription,
+    InsertionSortDescription,
+    SelectionSortDescription,
+    MergeSortDescription
+} from "@/app/_components/sorting/Descriptions/Descriptions";
+
+interface descriptionType {
+    title: string;
+    description: React.JSX.Element;
+    worstCase: React.JSX.Element;
+    avgCase: React.JSX.Element;
+    bestCase: React.JSX.Element;
+    space: React.JSX.Element;
+}
 
 const getTooltip = (algorithm: number) => {
+    let description: descriptionType | undefined;
     switch (algorithm) {
         case 0:
-            return (
-                <React.Fragment>
-                    <Typography color='inherit'>Bubble Sort</Typography>
-                    <ol>
-                        <li>Compare a pair of adjacent items (a, b),</li>
-                        <li>
-                            Swap that pair if the items are out of order (in this case, when a
-                            b),
-                        </li>
-                        <li>
-                            Repeat Step 1 and 2 until we reach the end of array (the last pair
-                            is the (N-2)-th and (N-1)-th items as we use 0-based indexing),
-                        </li>
-                        <li>
-                            By now, the largest item will be at the last position. We then
-                            reduce N by 1 and repeat Step 1 until we have N = 1.
-                        </li>
-                    </ol>
-                    <p>
-                        Time Complexity: O(n<sup>2</sup>)
-                    </p>
-                </React.Fragment>
-            );
+            description = BubbleSortDescription;
+            break;
         case 1:
-            return (
-                <React.Fragment>
-                    <Typography color='inherit'>Insertion Sort</Typography>
-                    <ol>
-                        <li>Start with one card in your hand,</li>
-                        <li>
-                            Pick the next card and insert it into its proper sorted order,
-                        </li>
-                        <li>Repeat previous step for all cards.</li>
-                    </ol>
-                    <p>
-                        Time Complexity: O(n<sup>2</sup>)
-                    </p>
-                </React.Fragment>
-            );
+            description = InsertionSortDescription;
+            break;
         case 2:
-            return (
-                <React.Fragment>
-                    <Typography color='inherit'>Selection Sort</Typography>
-                    <ol>
-                        <li>
-                            Find the position X of the smallest item in the range of
-                            [L...N−1],
-                        </li>
-                        <li>Swap X-th item with the L-th item,</li>
-                        <li>
-                            Increase the lower-bound L by 1 and repeat Step 1 until L = N-2.
-                        </li>
-                    </ol>
-                    <p>
-                        Time Complexity: O(n<sup>2</sup>)
-                    </p>
-                </React.Fragment>
-            );
+            description = SelectionSortDescription;
+            break;
         case 3:
-            return (
-                <React.Fragment>
-                    <Typography color='inherit'>Merge Sort</Typography>
-                    <ol>
-                        <li>
-                            Merge each pair of individual element (which is by default,
-                            sorted) into sorted arrays of 2 elements,
-                        </li>
-                        <li>
-                            Merge each pair of sorted arrays of 2 elements into sorted arrays
-                            of 4 elements, Repeat the process...,
-                        </li>
-                        <li>
-                            Final step: Merge 2 sorted arrays of N/2 elements (for simplicity
-                            of this discussion,<br></br> we assume that N is even) to obtain a fully
-                            sorted array of N elements.
-                        </li>
-                    </ol>
-                    <p>Time Complexity: O(n log(n))</p>
-                </React.Fragment>
-            );
-        case 4:
-            return (
-                <React.Fragment>
-                    <Typography color='inherit'>Quick Sort</Typography>
-                    <p>
-                        Quick Sort is another Divide and Conquer sorting algorithm (the
-                        other one discussed in this visualization page is Merge Sort).
-                    </p>
-                    <p>
-                        Divide step: Choose an item p (known as the pivot)<br></br> Then
-                        partition the items of a[i..j] into three parts: a[i..m-1], a[m],
-                        and a[m+1..j].<br></br> a[i..m-1] (possibly empty) contains items
-                        that are smaller than p.<br></br> a[m] is the pivot p, i.e. index m
-                        is the correct position for p in the sorted order of array a.
-                        <br></br> a[m+1..j] (possibly empty) contains items that are greater
-                        than or equal to p.<br></br> Then, recursively sort the two parts.
-                        <br></br>Conquer step: Don't be surprised... We do nothing :O!
-                    </p>
-                </React.Fragment>
-            );
+            description = MergeSortDescription;
+            break;
         default:
             break;
     }
+
+    return (
+        <div className="divide-y">
+            <span color='inherit' className="text-xl font-bold">{description?.title}</span>
+            <div className="text-justify">{description?.description}</div>
+            <div className="m-2">
+                <span className="font-bold">Time & Space Complexity</span>
+                <div>Best Case: {description?.bestCase}</div>
+                <span className="font-bold">Worst Time Complexity</span>
+                <div>Worst Case: {description?.worstCase}</div>
+                <span className="font-bold">Average Time Complexity</span>
+                <div>Average Case: {description?.avgCase}</div>
+                <span className="font-bold">Space Complexity</span>
+                <div>Space: {description?.space}</div>
+            </div>
+        </div>
+    );
 };
 
 function InfoTooltips(algorithm: number) {
@@ -119,8 +63,8 @@ function InfoTooltips(algorithm: number) {
     );
 }
 
-const NoMaxWidthTooltip = styled(({ className, ...props }: TooltipProps) => (
-    <Tooltip {...props} classes={{ popper: className }} />
+const NoMaxWidthTooltip = styled(({className, ...props}: TooltipProps) => (
+    <Tooltip {...props} classes={{popper: className}}/>
 ))({
     [`& .${tooltipClasses.tooltip}`]: {
         maxWidth: 'none',

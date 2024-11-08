@@ -1,5 +1,5 @@
-const MergeSort = async (arr: number[]) => {
-    mergeSortHelper(arr, 0, arr.length - 1);
+const MergeSort = async (array: number[]) => {
+    mergeSortHelper(array, 0, array.length - 1);
 };
 
 const mergeSortHelper = (arr: number[], left: number, right: number) => {

@@ -3,14 +3,22 @@
 import React, {Component} from 'react';
 
 // Algorithms
-import BubbleSort from "@/app/_utils/sorting/algorithms/BubbleSort";
-import SelectionSort from "@/app/_utils/sorting/algorithms/SelectionSort";
-import InsertionSort from "@/app/_utils/sorting/algorithms/InsertionSort";
-import MergeSort from "@/app/_utils/sorting/algorithms/MergeSort";
-import QuickSort from "@/app/_utils/sorting/algorithms/QuickSort";
-import QuickSortThreeWay from "@/app/_utils/sorting/algorithms/QuickSortThreeWay";
-import HeapSort from "@/app/_utils/sorting/algorithms/HeapSort";
+import BubbleSortAlgorithm from "@/app/_utils/sorting/algorithms/BubbleSort";
+import SelectionSortAlgorithm from "@/app/_utils/sorting/algorithms/SelectionSort";
+import InsertionSortAlgorithm from "@/app/_utils/sorting/algorithms/InsertionSort";
+import MergeSortAlgorithm from "@/app/_utils/sorting/algorithms/MergeSort";
+import QuickSortAlgorithm from "@/app/_utils/sorting/algorithms/QuickSort";
+import QuickSortThreeWayAlgorithm from "@/app/_utils/sorting/algorithms/QuickSortThreeWay";
+import HeapSortAlgorithm from "@/app/_utils/sorting/algorithms/HeapSort";
 import {sleep} from "@/app/_utils/sorting/helpers/helpers";
+
+import {BubbleSort} from "@/app/_utils/chart/algorithms/BubbleSort";
+import {InsertionSort} from "@/app/_utils/chart/algorithms/InsertionSort";
+import {SelectionSort} from "@/app/_utils/chart/algorithms/SelectionSort";
+import {MergeSort} from "@/app/_utils/chart/algorithms/MergeSort";
+import {QuickSort} from "@/app/_utils/chart/algorithms/QuickSort";
+import {QuickSortThreeWay} from "@/app/_utils/chart/algorithms/QuickSortThreeWay";
+import {HeapSort} from "@/app/_utils/chart/algorithms/HeapSort";
 
 // Icons
 import SkipPreviousIcon from '@mui/icons-material/SkipPrevious';
@@ -32,6 +40,7 @@ interface visualizerState {
     currentStep: number;
     algorithm: number;
     isVisualizing: boolean;
+    time: number;
     delay: number;
 }
 
@@ -59,10 +68,26 @@ export default class Visualizer extends Component<visualizerProps> {
         currentStep: 0,
         algorithm: 0,
         isVisualizing: false,
+        time: 0,
         delay: this.props.delay,
     };
 
-    ALGORITHMS = [BubbleSort, InsertionSort, SelectionSort, MergeSort, QuickSort, QuickSortThreeWay, HeapSort];
+    ALGORITHMS = [BubbleSortAlgorithm,
+        InsertionSortAlgorithm,
+        SelectionSortAlgorithm,
+        MergeSortAlgorithm,
+        QuickSortAlgorithm,
+        QuickSortThreeWayAlgorithm,
+        HeapSortAlgorithm];
+
+    RUNTIME_ALGORITHMS = [BubbleSort,
+        InsertionSort,
+        SelectionSort,
+        MergeSort,
+        QuickSort,
+        QuickSortThreeWay,
+        HeapSort];
+
     ALGORITHM_OPTIONS = [
         {name: "Bubble Sort", value: 0},
         {name: "Insertion Sort", value: 1},
@@ -131,11 +156,15 @@ export default class Visualizer extends Component<visualizerProps> {
         let steps = this.state.sortSteps.slice();
         let colorSteps = this.state.colorSteps.slice();
 
-        console.log(array);
-
+        let start = performance.now();
+        this.RUNTIME_ALGORITHMS[this.state.algorithm](this.state.array.slice());
+        let end = performance.now();
         this.ALGORITHMS[this.state.algorithm](array, 0, steps, colorSteps);
 
+        let timeTaken = Math.round((end - start + Number.EPSILON) * 100) / 100;
+
         this.setState({
+            time: timeTaken,
             sortSteps: steps,
             colorSteps: colorSteps,
         });
@@ -252,13 +281,21 @@ export default class Visualizer extends Component<visualizerProps> {
     render() {
         return (
             <div className="flex flex-col justify-center items-center">
-                <div className="flex justify-center items-center mt-5">
-                    <Dropdown options={this.ALGORITHM_OPTIONS} selected={this.ALGORITHM_OPTIONS[0]} type={"algorithm"}
-                              handleSelect={this.changeAlgorithm}/>
-                    <div className="flex justify-center items-center my-2">
-                        <NoMaxWidthTooltip title={InfoTooltips(this.state.algorithm)} arrow>
-                            <button className="bg-gray-600 px-5 py-3 rounded-md">INFO</button>
-                        </NoMaxWidthTooltip>
+                <div className="flex justify-center items-center mt-5 w-[450px]">
+                    <div className="w-1/3">
+                        <Dropdown options={this.ALGORITHM_OPTIONS} selected={this.ALGORITHM_OPTIONS[0]} type={"algorithm"}
+                                   handleSelect={this.changeAlgorithm}/></div>
+                    <div className="w-1/3">
+                        <div className="flex justify-center items-center my-2">
+                            <NoMaxWidthTooltip title={InfoTooltips(this.state.algorithm)} arrow>
+                                <button className="bg-gray-600 px-5 py-3 rounded-md">INFO</button>
+                            </NoMaxWidthTooltip>
+                        </div>
+                    </div>
+                    <div className="w-1/3">
+                        <div className="flex flex-row ml-2">
+                            Time Taken: {this.state.time} ms
+                        </div>
                     </div>
                 </div>
                 <div className='m-0 px-5 flex flex-col justify-center items-center bg-[#121419]'>

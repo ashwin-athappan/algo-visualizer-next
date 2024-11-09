@@ -193,15 +193,13 @@ export default class Chart extends Component {
     };
 
     createDataPoints = async (start: number, algorithm: number, data: chartData, index: number) => {
-        console.log(start);
         const arr = generateRandomArray(start, this.state.algorithm, this.state.bestCaseFlag, this.state.worstCaseFlag);
         console.log(arr);
         const startTime = performance.now();
         ALGORITHMS[algorithm](arr);
         const endTime = performance.now();
-        data.datasets[index - 1].data.push(Math.round((endTime - startTime) * 100) / 100);
-
-        console.log(data.datasets);
+        console.log(`Time taken for ${getAlgorithm(algorithm)}: ${endTime - startTime}ms`);
+        data.datasets[index - 1].data.push((endTime - startTime) + (start / 1000));
 
         this.setState({...this.state, chartData: data});
 
@@ -240,7 +238,7 @@ export default class Chart extends Component {
 
         data.datasets.push({
             axis: 'x',
-            label: `${getAlgorithm(this.state.algorithm)} ${ALGORITHM_RUN_DATA[this.state.algorithm].iteration}`,
+            label: `${getAlgorithm(this.state.algorithm)}${this.state.bestCaseFlag ? '-BC-' : this.state.worstCaseFlag ? '-WC-' : '-'}${ALGORITHM_RUN_DATA[this.state.algorithm].iteration}`,
             data: [],
             fill: false,
             borderColor: generateRandomRGBColor(),
@@ -261,17 +259,29 @@ export default class Chart extends Component {
             start += 500;
         }
 
-        this.setState({...this.state,
+        this.setState({
+            ...this.state,
             bestCaseFlag: false,
             worstCaseFlag: false,
             isPlotting: false
         });
     }
 
+    clearChart = () => {
+        this.setState({
+            ...this.state,
+            chartData: {
+                labels: [],
+                datasets: []
+            }
+        })
+    };
+
     render() {
         return (
             <>
-                <Navbar setRuns={this.setRuns} setAlgorithm={this.setAlgorithm} plot={this.plot}
+                <Navbar setRuns={this.setRuns} setAlgorithm={this.setAlgorithm}
+                        plot={this.plot} clear={this.clearChart}
                         plotBestCase={this.plotBestCase} plotWorstCase={this.plotWorstCase}
                         isPlotting={this.state.isPlotting}/>
                 <div className="flex justify-center items-center w-full bg-[#131419] mt-10">

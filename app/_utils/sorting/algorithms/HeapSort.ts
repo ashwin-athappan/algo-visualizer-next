@@ -34,7 +34,6 @@ function heapify(array: number[], n: number, i: number, arraySteps: number[][], 
 
 function heapSortHelper(array: number[], n: number, arraySteps: number[][], colorSteps: number[][]) {
     for (let i = Math.floor(n / 2) - 1; i >= 0; i--) {
-        fillRange(array, 0, Math.floor(n / 2) - 1, 1, arraySteps, colorSteps);
         heapify(array, n, i, arraySteps, colorSteps);
     }
 

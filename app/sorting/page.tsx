@@ -207,9 +207,15 @@ export default class Sorting extends Component {
 
         let visualizers = this.state.children.map((child, idx) => {
             let isInteractive = true;
+
             if (this.state.comparison > 2 && this.state.barCount > 10) {
                 isInteractive = false;
             }
+
+            if (this.state.barCount > 30) {
+                isInteractive = false;
+            }
+
             return(<Visualizer key={idx} delay={this.state.delay} comparisons={this.state.comparison}
                         initialArray={this.state.initialArray} barCount={this.state.barCount}
                         handleChangeVisualizingState={this.handleChangeVisualizingState}

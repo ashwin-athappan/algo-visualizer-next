@@ -1,4 +1,4 @@
-const BubbleSort = async (arr: number[]) => {
+const BubbleSort = (arr: number[]) => {
     let n = arr.length;
     let swapped;
     for (let i = 0; i < n; i++) {

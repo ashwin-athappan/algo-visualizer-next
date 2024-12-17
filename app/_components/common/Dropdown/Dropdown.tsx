@@ -27,8 +27,8 @@ export default function Dropdown (props: dropdownProps) {
     };
 
     return (
-        <FormControl className={`${props.type === 'algorithm' ? 'w-3/4': 'w-1/4'}`}>
-            <InputLabel id={`algorithm-select-label-${props.type}`} className="text-white" htmlFor={`${props.type}-select`}>{props.type}</InputLabel>
+        <FormControl className={`${props.type === 'algorithm' ? 'w-3/4': 'w-1/4'}`} variant={"standard"} style={{borderColor: 'white'}}>
+            <InputLabel id={`algorithm-select-label-${props.type}`} className="text-white" htmlFor={`${props.type}-select`}>{props.type.toUpperCase()}</InputLabel>
             <Select
                 labelId="algorithm-select-label"
                 id="algorithm-select"

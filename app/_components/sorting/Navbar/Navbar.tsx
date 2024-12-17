@@ -1,7 +1,6 @@
 "use client";
 
 import React, {useEffect} from 'react';
-import IOSSwitch from "@/app/_components/sorting/IOSSwitch/IOSSwitch";
 import ControlPanel from "@/app/_components/sorting/ControlPannel/ControlPanel";
 
 interface navbarProps {
@@ -73,7 +72,7 @@ export default function Navbar(props: navbarProps) {
                         />
                         <label
                             htmlFor="comparison"
-                            className={`absolute cursor-text ${isVisualizing ? 'bg-gray-600' : 'bg-[#121419]'} 
+                            className={`absolute cursor-text ${isVisualizing ? 'bg-gray-600' : 'bg-[#282829]'} 
                             px-1 left-2.5 top-2.5 text-white text-sm transition-all transform origin-left 
                             peer-focus:-top-2 peer-focus:left-2.5 peer-focus:text-xs peer-focus:text-slate-400 
                             peer-focus:scale-90`}>
